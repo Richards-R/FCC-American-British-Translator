@@ -12,9 +12,10 @@ module.exports = function (app) {
       let {text, locale} = req.body;
       console.log("locale ", locale)
       console.log("text ", text)
-      if (locale = 'american-to-british'){
-      let americanOnlyCheck = translator.checkIfAmericanOnly(text);
-     console.log(americanOnlyCheck)
-    return res.json({"translation" : americanOnlyCheck}) }
+      
+      let returnedTranslatedWord = translator.checkWordLists(text, locale);
+      return res.json({"translation" : returnedTranslatedWord}) 
     });
 };
+
+
