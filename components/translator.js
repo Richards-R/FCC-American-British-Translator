@@ -24,6 +24,7 @@ class Translator {
 
     if (wordListKeys === true) {
       // console.log(wordList[text])
+      
       return wordList[text];
     }
       
