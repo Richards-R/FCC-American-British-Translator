@@ -13,10 +13,8 @@ module.exports = function (app) {
       console.log("locale ", locale)
       console.log("text ", text)
       
-      let returnedTranslatedWord = 
-        //translator.checkWordLists(text, locale);
-        translator.translateFunc(text, locale);
-      return res.json({"translation" : returnedTranslatedWord}) 
+      let translationResult = translator.translateFunc(text, locale);
+      return res.json({"translation" : translationResult}) 
     });
 };
 
