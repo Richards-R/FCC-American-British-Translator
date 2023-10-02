@@ -5,14 +5,13 @@ const server = require('../server.js');
 
 chai.use(chaiHttp);
 
-let Translator = require('../components/translator.js');
-let translator = new Translator();
+const agent = chai.request.agent(server).keepOpen(); // to keep app accessible after testing
 
 suite('Functional Tests', () => {
 
-  after(function() {
-    chai.request(server).get("/api");
-  });
+  // after(function() {
+  //   chai.request(server).get("/api");
+  // });
 
   suite("POST /api/translate/{text, locale} ",
     function() {
@@ -20,8 +19,9 @@ suite('Functional Tests', () => {
         let inputText = "Mangoes are my favorite fruit.";
         let locale = "american-to-british";
         let expectedTransOutput = "Mangoes are my <span class=\"highlight\">favourite</span> fruit.";
-        chai
-          .request(server)
+          agent
+        // chai
+          // .request(server)
           .post("/api/translate")
           .send({ text: inputText, locale: locale })
           .end(function(err, res) {
@@ -35,8 +35,9 @@ suite('Functional Tests', () => {
       test("FT 2. Translation with text and invalid locale field", function(done) {
         let inputText = "Mangoes are my favorite fruit.";
         let locale = "american-to-japanese";
-        chai
-          .request(server)
+        agent
+        // chai
+         // .request(server)
           .post("/api/translate")
           .send({ text: inputText, locale: locale })
           .end(function(err, res) {
@@ -47,8 +48,9 @@ suite('Functional Tests', () => {
 
       test("FT 3. Translation with missing text field", function(done) {
         let locale = "american-to-british";
-        chai
-          .request(server)
+          agent
+        // chai
+        // .request(server)
           .post("/api/translate")
           .send({ locale: locale })
           .end(function(err, res) {
@@ -59,8 +61,9 @@ suite('Functional Tests', () => {
 
       test("FT 4. Translation with missing locale field", function(done) {
         let inputText = "Mangoes are my favorite fruit.";
-        chai
-          .request(server)
+             agent
+        // chai
+        //  .request(server)
           .post("/api/translate")
           .send({ text: inputText })
           .end(function(err, res) {
@@ -72,8 +75,9 @@ suite('Functional Tests', () => {
       test("FT 5. Translation with with empty text", function(done) {
         let inputText = "";
         let locale = "american-to-british";
-        chai
-          .request(server)
+            agent
+        // chai
+        //  .request(server)
           .post("/api/translate")
           .send({ text: inputText, locale: locale })
           .end(function(err, res) {
@@ -85,8 +89,9 @@ suite('Functional Tests', () => {
       test("FT 6. Translation with text that needs no translation", function(done) {
         let inputText = "Mangoes are my favourite fruit.";
         let locale = "american-to-british";
-        chai
-          .request(server)
+             agent
+        // chai
+        //  .request(server)
           .post("/api/translate")
           .send({ text: inputText, locale: locale })
           .end(function(err, res) {
