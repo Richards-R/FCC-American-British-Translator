@@ -5,9 +5,27 @@ const americanToBritishTitles = require("./american-to-british-titles.js");
 let locale = require("../routes/api.js");
 
 class Translator {
-  
   translateFunc(text, locale) {
     let textArray = [];
+
+    if (text == "") {
+      return { error: 'No text to translate' };
+    };
+
+    if (!text) {
+      return { error: 'Required field(s) missing' };
+    };
+
+    if (!locale) {
+      return { error: 'Required field(s) missing' };
+    };
+
+    if (locale !== "american-to-british") {
+      if (locale !== "british-to-american") {
+        return { error: 'Invalid value for locale field' }
+      }
+    };
+
     let lastChar = text.slice(-1);
     let postTranslateArray = [];
 
@@ -16,62 +34,106 @@ class Translator {
       textArray = deperiodedTextStr.split(" ");
     } else {
       textArray = text.split(" ");
-      console.log("textArr", textArray);
-      console.log("textArrISARRAY ", Array.isArray(textArray));
     }
 
     for (let i = 0; i < textArray.length; i++) {
-      console.log("5.0 textArray[i]", textArray[i]);
+
+      function isLowerCase(str) {
+        return str === str.toLowerCase() && str !== str.toUpperCase();
+      }
+
+      let firstLetterLowCase = isLowerCase(textArray[i]);
+
       let text1 = textArray[i];
-      let text2 = textArray[i] + " " + textArray[i+1];
-       console.log("5.1 text2", text2);
-      let text3 = textArray[i] + " " + textArray[i+1] + " " + textArray[i+2];
-      
+      let text2 = textArray[i] + " " + textArray[i + 1];
+      let text3 = textArray[i] + " " + textArray[i + 1] + " " + textArray[i + 2];
+
       let testWord1 = this.checkWordLists(text1.toLowerCase(), locale);
       let testWord2 = this.checkWordLists(text2.toLowerCase(), locale);
       let testWord3 = this.checkWordLists(text3.toLowerCase(), locale);
-      console.log("6. testWords", testWord1, testWord2, testWord3);
 
       if (testWord1 === "" && testWord2 === "" && testWord3 === "") {
+
+        let myRegexUS = /:[0-9][0-9]/
+        let resultUS = myRegexUS.test(text1);
+        if (resultUS === true && locale === "american-to-british") {
+          text1 = text1.replace(":", ".");
+          text1 = `<span class="highlight">` + text1 + `</span>`;
+        }
+
+        let myRegexBR = /\.[0-9][0-9]/
+        let resultBR = myRegexBR.test(text1);
+        if (resultBR === true && locale === "british-to-american") {
+          text1 = text1.replace(".", ":");
+          text1 = `<span class="highlight">` + text1 + `</span>`;
+        }
+
         postTranslateArray.push(text1);
-        console.log("8.1 nottranslating word ", text1);
-      
-      // }else if (testWord1 !== "" && testWord2 !== "" && testWord3 === "") {
-      //   postTranslateArray.push(text2);
-      //   console.log("8.2 nottranslating word ", text2);
-      // } else if () {
-      // postTranslateArray.push(text3);
-      // console.log("8.3 nottranslating word ", text3);
-      
+
       } else {
-        if (testWord3 !== ""){
-        console.log("9.1 testWord3 ", testWord3);
-        postTranslateArray.push(testWord3);
-        i = i+2;
-        }else if (testWord2 !== ""){
-        console.log("9.2 testWord2 ", testWord2);
-        postTranslateArray.push(testWord2);
-        i = i+1;
-        }else if (testWord1 !== ""){
-        console.log("9.3 testWord1 ", testWord1);
-        postTranslateArray.push(testWord1);
+        if (testWord3 !== "") {
+          if (firstLetterLowCase === true) {
+            let a = testWord3;
+            let oldChar = a[0];
+            let newChar = testWord3[0].toLowerCase();
+            let replaced = a.replace(oldChar, newChar);
+            postTranslateArray.push(`<span class="highlight">` + replaced + `</span>`);
+          } else {
+            let a = testWord3;
+            let oldChar = a[0];
+            let newChar = testWord3[0].toUpperCase();
+            let replaced = a.replace(oldChar, newChar);
+            postTranslateArray.push(`<span class="highlight">` + replaced + `</span>`);
+          }
+          i = i + 2;
+        } else if (testWord2 !== "") {
+          if (firstLetterLowCase === true) {
+            let a = testWord2;
+            let oldChar = a[0];
+            let newChar = testWord2[0].toLowerCase();
+            let replaced = a.replace(oldChar, newChar);
+            postTranslateArray.push(`<span class="highlight">` + replaced + `</span>`);
+          } else {
+            let a = testWord2;
+            let oldChar = a[0];
+            let newChar = testWord2[0].toUpperCase();
+            let replaced = a.replace(oldChar, newChar);
+            postTranslateArray.push(`<span class="highlight">` + replaced + `</span>`);
+          }
+          i = i + 1;
+        } else if (testWord1 !== "") {
+          if (firstLetterLowCase === true) {
+            let a = testWord1;
+            let oldChar = a[0];
+            let newChar = testWord1[0].toLowerCase();
+            let replaced = a.replace(oldChar, newChar);
+            postTranslateArray.push(`<span class="highlight">` + replaced + `</span>`);
+          } else {
+            let a = testWord1;
+            let oldChar = a[0];
+            let newChar = testWord1[0].toUpperCase();
+            let replaced = a.replace(oldChar, newChar);
+            postTranslateArray.push(`<span class="highlight">` + replaced + `</span>`);
+          }
         }
       }
     }
-
-    console.log("10. postTranslateArray ", postTranslateArray);
-
     if (lastChar === "." || lastChar === "?") {
-     let replacement = postTranslateArray[postTranslateArray.length - 1] + lastChar;
-      postTranslateArray[postTranslateArray.length - 1] = replacement;
-      return postTranslateArray.join(" ");
-    } else {
-      return postTranslateArray.join(" ");
+      let tailReplacement =
+        postTranslateArray[postTranslateArray.length - 1] + lastChar;
+      postTranslateArray[postTranslateArray.length - 1] = tailReplacement;
     }
+    let myString = postTranslateArray.join(" ");
+    let testMatchString = myString.replace(`<span class="highlight">`, "").replace(`</span>`, "");
+    if (text === testMatchString) {
+      myString = "Everything looks good to me!"
+    };
+
+    let returnObj = { text: text, translation: myString };
+    console.log(returnObj);
+    return returnObj;
   }
 
-
-      
 
   checkWordLists(text, locale) {
     let wordList = "";
@@ -80,9 +142,6 @@ class Translator {
 
     const getKeyByValue = (obj, val) =>
       Object.keys(obj).find((key) => obj[key] === val);
-
-    console.log("---------------------------1. text ", text);
-
     if (locale === "american-to-british") {
       wordList = americanOnly;
     } else if (locale === "british-to-american") {
@@ -90,53 +149,55 @@ class Translator {
     }
 
     wordListKeys = Object.keys(wordList).includes(text);
-    // console.log("000000000000000. car boot sale test ", Object.keys(wordList).includes(text))
 
     if (wordListKeys === true) {
-      console.log("0. wordlisttext ", wordList[text]);
-
       wordResult = wordList[text];
     }
 
     if (wordListKeys === false) {
       wordList = americanToBritishSpelling;
-
       wordListKeys = Object.keys(wordList).includes(text);
-
       if (wordListKeys === false) {
         wordListKeys = Object.values(wordList).includes(text);
-        console.log("1. onA2BwordList ", wordListKeys);
-    
-          if (wordListKeys === true && locale === "american-to-british") {
-            wordResult = wordList[text];
-            console.log("2. wordList[text]0000 ", wordResult);
-          } else if (wordListKeys === true && locale === "british-to-american") {
-            wordResult = getKeyByValue(wordList, text);
-            console.log("3. A2BSpellkeyResult ", wordResult);
-          } else if (wordListKeys === false){
-            
-            wordList = americanToBritishTitles;
-            wordListKeys = Object.keys(wordList).includes(text);
-            console.log("********. Title (Key(Amer)) test ", Object.keys(wordList).includes(text))
-          
+      }
 
-              if (wordListKeys === false) {
-                wordListKeys = Object.values(wordList).includes(text)
-                  console.log("********. Title (Value(Brit) test ", Object.values(wordList).includes(text));
-              
-        
-                    if (wordListKeys === true && locale === "american-to-british") {
-                      console.log("4. wordList[text]1224", wordList[text]);
-                      wordResult = wordList[text];
-                    } else if (wordListKeys === true && locale === "british-to-american") {
-                      wordResult = getKeyByValue(wordList, text);
-                    }
-                }
-             }
+      if (wordListKeys === true && locale === "american-to-british") {
+        if (wordList[text] !== undefined) {
+          wordResult = wordList[text];
+        } else {
+          wordResult = text;
+        }
+      } else if (wordListKeys === true && locale === "british-to-american") {
+        if (getKeyByValue(wordList, text) !== undefined) {
+          wordResult = getKeyByValue(wordList, text);
+        } else {
+          wordResult = text;
+        }
+      }
+
+      if (wordListKeys === false) {
+        wordList = americanToBritishTitles;
+        wordListKeys = Object.keys(wordList).includes(text);
+        if (wordListKeys === false) {
+          wordListKeys = Object.values(wordList).includes(text);
+        }
+
+        if (wordListKeys === true && locale === "american-to-british") {
+          if (wordList[text] !== undefined) {
+            wordResult = wordList[text];
+          } else {
+            wordResult = text;
+          }
+        } else if (wordListKeys === true && locale === "british-to-american") {
+          if (getKeyByValue(wordList, text) !== undefined) {
+            wordResult = getKeyByValue(wordList, text);
+          } else {
+            wordResult = text;
           }
         }
-      return wordResult;
+      }
     }
-  
+    return wordResult;
+  }
 }
 module.exports = Translator;

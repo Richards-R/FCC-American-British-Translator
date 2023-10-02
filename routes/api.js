@@ -14,7 +14,7 @@ module.exports = function (app) {
       console.log("text ", text)
       
       let translationResult = translator.translateFunc(text, locale);
-      return res.json({"translation" : translationResult}) 
+      return res.json(translationResult) 
     });
 };
 
